@@ -34,6 +34,7 @@
 		//Boolean - If Labels should be displayed above bars
 		barGraphLabels : false,
 
+		//String - Color Value for Labels above Bars
 		barGraphLabelColor : '#CCCCCC',
 
 		//String - A legend template
