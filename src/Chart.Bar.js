@@ -31,6 +31,11 @@
 		//Number - Spacing between data sets within X values
 		barDatasetSpacing : 1,
 
+		//Boolean - If Labels should be displayed above bars
+		barGraphLabels : false,
+
+		barGraphLabelColor : '#CCCCCC',
+
 		//String - A legend template
 		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
 
@@ -88,7 +93,31 @@
 			this.BarClass = Chart.Rectangle.extend({
 				strokeWidth : this.options.barStrokeWidth,
 				showStroke : this.options.barShowStroke,
-				ctx : this.chart.ctx
+				ctx : this.chart.ctx,
+
+				draw : function(){
+					Chart.Rectangle.prototype.draw.call(this);
+
+					var ctx = this.ctx,
+							halfWidth = this.width/2,
+							leftX = this.x - halfWidth,
+							rightX = this.x + halfWidth,
+							top = this.base - (this.base - this.y),
+							halfStroke = this.strokeWidth / 2;
+
+					
+					// Draw Labels above Bars if barGraphLabels == true
+					if(options.barGraphLabels) {
+						ctx.font 					= this.font;
+						ctx.fillStyle 		= options.barGraphLabelColor;
+						ctx.fillStyle 		= this.textColor;
+						ctx.textAlign 		= "center";
+						ctx.textBaseline 	= "middle";
+
+						ctx.fillText( this.value + '', this.x , top - 10);
+					}
+					
+				}
 			});
 
 			//Iterate through each of the datasets, and build this into a property of the chart
@@ -105,6 +134,7 @@
 
 				helpers.each(dataset.data,function(dataPoint,index){
 					if (helpers.isNumber(dataPoint)){
+						
 						//Add a new point for each piece of data, passing any required data to draw.
 						datasetObject.bars.push(new this.BarClass({
 							value : dataPoint,
